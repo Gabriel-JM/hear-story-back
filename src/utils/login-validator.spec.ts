@@ -16,4 +16,18 @@ describe('Login Validator', () => {
       expect(sut.isDate(date)).toBe(true)
     }
   })
+
+  it('should return false if passed an invalid date', () => {
+    const sut = makeSut()
+    const validDates = [
+      '1920-01-00',
+      '1999-00-05',
+      '2012-02-30',
+      '2020-01-02'
+    ]
+
+    for(const date of validDates) {
+      expect(sut.isDate(date)).toBe(false)
+    }
+  })
 })

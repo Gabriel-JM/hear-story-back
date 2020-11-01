@@ -5,7 +5,9 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -q --exec ts-node src/main -e ts --watch src"
+    "start": "nodemon -q --exec ts-node src/main -e ts --watch src",
+    "test": "jest --runInBand --no-cache",
+    "test:watch": "npm test -- --watch"
   },
   "repository": {
     "type": "git",

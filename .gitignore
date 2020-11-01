@@ -1,4 +1,5 @@
 /node_modules
 src/resources/database/dev.db
 src/resources/database/test.db
+coverage
 .env

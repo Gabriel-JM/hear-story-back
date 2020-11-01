@@ -11,8 +11,12 @@ function makeSut() {
 
 describe('Login Repository', () => {
   const user = {
+    email: 'email@mail.com',
+    name: 'any.name',
+    birthday: '1999-04-23',
     username: 'any_user',
-    password: 'hashed_password'
+    password: 'hashed_password',
+    privacyTerms: true
   }
 
   beforeAll(async () => {

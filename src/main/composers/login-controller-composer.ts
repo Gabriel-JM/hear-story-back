@@ -6,10 +6,13 @@ import { TextHasher } from '../../utils/text-hasher'
 import { Tokenizer } from '../../utils/tokenizer'
 
 export default () => {
-  const passwordHasher = new TextHasher()
-  const tokenGenerator = new Tokenizer(process.env.SECRET_KEY as string)
+  const env = process.env.NODE_ENV as EnvironmentOptions
+  const secretKey = process.env.SECRET_KEY as string
 
-  const knexDB = connectionDatabase(process.env.NODE_ENV as EnvironmentOptions)
+  const passwordHasher = new TextHasher()
+  const tokenGenerator = new Tokenizer(secretKey)
+
+  const knexDB = connectionDatabase(env)
   const loginRepository = new LoginRepository('users', knexDB)
 
   const loginController = new LoginController(

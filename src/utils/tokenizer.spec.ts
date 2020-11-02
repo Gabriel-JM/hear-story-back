@@ -12,8 +12,12 @@ describe('Tokenizer', () => {
 
     const token = sut.generate({
       id: 1,
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      birthday: '2000-04-10',
+      privacyTerms: true,
       username: 'any_username',
-      password: 'any_password'
+      password: 'hashed_password'
     })
 
     expect(token).toBeDefined()
@@ -24,8 +28,12 @@ describe('Tokenizer', () => {
     const sut = makeSut()
     const user = {
       id: 1,
+      name: 'any_name',
+      email: 'any_email@mail.com',
+      birthday: '2000-04-10',
+      privacyTerms: true,
       username: 'any_username',
-      password: 'any_password'
+      password: 'hashed_password'
     }
 
     const token = sut.generate(user)

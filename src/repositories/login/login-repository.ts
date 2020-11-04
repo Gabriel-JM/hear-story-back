@@ -8,6 +8,12 @@ export class LoginRepository implements Repository<User> {
     private readonly knex: Knex<User>
   ) {}
 
+  async findByUsername(username: string) {
+    const [user] = await this.knex(this.table).where({ username })
+
+    return user
+  }
+
   async save(user: User) {
     const [newUserId] = await this.knex(this.table).insert(user)
 

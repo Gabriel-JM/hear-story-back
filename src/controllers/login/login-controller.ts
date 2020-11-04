@@ -1,4 +1,5 @@
-import { HttpRequest, Repository } from '../../protocols/infra'
+import { HttpRequest } from '../../protocols/infra'
+import { LoginRepository } from '../../protocols/infra/login-repository'
 import { User } from '../../protocols/models'
 import { ContentValidator, Hasher } from '../../protocols/utils'
 import { TokenGenerator } from '../../protocols/utils/token-generator'
@@ -8,11 +9,42 @@ import { HttpResponse } from '../../resources/http/http-response'
 export class LoginController {
 
   constructor(
-    private readonly repository: Repository<User>,
+    private readonly repository: LoginRepository,
     private readonly validator: ContentValidator,
     private readonly passwordHasher: Hasher,
     private readonly tokenGenerator: TokenGenerator
   ) {}
+
+  async index(request: HttpRequest) {
+    try {
+      const { username, password } = request.body as User
+      const user = await this.repository.findByUsername(username)
+
+      if(!user) {
+        return HttpResponse.notFound('User with this name already exists.')
+      }
+
+      const isPasswordValid = this.passwordHasher.compare(
+        password,
+        user.password
+      )
+
+      if(!isPasswordValid) {
+        return HttpResponse.badRequest('Invalid password.')
+      }
+
+      const token = this.tokenGenerator.generate(user)
+
+      return HttpResponse.ok({
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        token
+      })
+    } catch(catchedError) {
+      return ErrorParser.catch(catchedError)
+    }
+  }
 
   async create(request: HttpRequest) {
     try {
@@ -47,6 +79,7 @@ export class LoginController {
       return HttpResponse.ok({
         id: user.id,
         username: user.username,
+        name: user.name,
         token
       })
     } catch(catchedError) {

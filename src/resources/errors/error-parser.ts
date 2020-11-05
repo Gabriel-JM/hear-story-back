@@ -10,6 +10,9 @@ export class ErrorParser {
       return responseBySqliteError[code](message)
     }
 
-    return HttpResponse.serverError(err)
+    return HttpResponse.serverError({
+      field: '',
+      error: err.message
+    })
   }
 }

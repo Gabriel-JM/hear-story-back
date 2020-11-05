@@ -21,7 +21,10 @@ export class LoginController {
       const user = await this.repository.findByUsername(username)
 
       if(!user) {
-        return HttpResponse.notFound('User with this name already exists.')
+        return HttpResponse.notFound({
+          field: 'name',
+          error: 'Nome de usuário já existente.'
+        })
       }
 
       const isPasswordValid = this.passwordHasher.compare(
@@ -30,7 +33,10 @@ export class LoginController {
       )
 
       if(!isPasswordValid) {
-        return HttpResponse.badRequest('Invalid password.')
+        return HttpResponse.badRequest({
+          field: 'password',
+          error: 'Senha inválida.'
+        })
       }
 
       const token = this.tokenGenerator.generate(user)
@@ -52,15 +58,24 @@ export class LoginController {
       const hashedPassword = await this.passwordHasher.hash(password)
 
       if(!this.validator.isEmail(email)) {
-        return HttpResponse.notAcceptable('Invalid E-mail.')
+        return HttpResponse.notAcceptable({
+          field: 'email',
+          error: 'E-mail inválido.'
+        })
       }
 
       if(!this.validator.isDate(birthday)) {
-        return HttpResponse.notAcceptable('Invalid birthday date.')
+        return HttpResponse.notAcceptable({
+          field: 'birthday',
+          error: 'Data de nascimento inválida.'
+        })
       }
 
       if(!privacyTerms) {
-        return HttpResponse.badRequest('Privacy Terms are required.')
+        return HttpResponse.badRequest({
+          field: 'privacyTerms',
+          error: 'Termo de privacidade é obrigatório.'
+        })
       }
 
       const userCredentials = {

@@ -1,4 +1,4 @@
-import { HttpResponseData } from '../../protocols/infra'
+import { HttpFieldError, HttpResponseData } from '../../protocols/infra'
 
 export class HttpResponse {
   static ok(body: object | object[]) {
@@ -8,43 +8,31 @@ export class HttpResponse {
     }
   }
 
-  static badRequest(error: Error | string) {
+  static badRequest(error: HttpFieldError) {
     return <HttpResponseData> {
       status: 400,
-      body: {
-        error: getErrorMessage(error)
-      }
+      body: error
     }
   }
 
-  static notFound(error: Error | string) {
+  static notFound(error: HttpFieldError) {
     return <HttpResponseData> {
       status: 404,
-      body: {
-        error: getErrorMessage(error)
-      }
+      body: error
     }
   }
 
-  static notAcceptable(error: Error | string) {
+  static notAcceptable(error: HttpFieldError) {
     return <HttpResponseData> {
       status: 406,
-      body: {
-        error: getErrorMessage(error)
-      }
+      body: error
     }
   }
 
-  static serverError(error: Error | string) {
+  static serverError(error: HttpFieldError) {
     return <HttpResponseData> {
       status: 500,
-      body: {
-        error: getErrorMessage(error)
-      }
+      body: error
     }
   }
-}
-
-function getErrorMessage(error: Error | string) {
-  return error instanceof Error ? error.message : error
 }

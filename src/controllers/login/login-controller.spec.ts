@@ -1,10 +1,13 @@
-import { Repository } from '../../protocols/infra'
+import { LoginRepository } from '../../protocols/infra/login-repository'
 import { User } from '../../protocols/models'
 import { SqliteError, TokenGenerator } from '../../protocols/utils'
 import { LoginController } from './login-controller'
 
 function makeSut() {
-  const repositorySpy = { save(_content: any) {} } as Repository<User>
+  const repositorySpy = <LoginRepository> {
+    findByUsername(_username: string) {},
+    save(_content: any) {}
+  }
 
   const loginValidator = {
     isEmail(email: string) {
@@ -68,6 +71,93 @@ describe('Login Controller', () => {
     }
   }
 
+  it('should return a 404 response, when no user is found in login', async () => {
+    const { sut, repositorySpy } = makeSut()
+
+    jest.spyOn(repositorySpy, 'findByUsername')
+      .mockImplementationOnce(
+        () => Promise.resolve(null)
+      )
+    ;
+
+    const response = await sut.index({ params: {}, body: {}, query: {} })
+
+    expect(response.status).toBe(404)
+    expect(response.body).toEqual({
+      field: 'name',
+      error: 'Usuário não encontrado.'
+    })
+  })
+
+  it('should return a 400 response, if an ivalid password is provided', async () => {
+    const { sut, repositorySpy, passwordHasherSpy } = makeSut()
+
+    const httpRequest = {
+      params: {},
+      query: {},
+      body: {
+        username: 'any_username',
+        password: 'any_password'
+      }
+    }
+
+    jest.spyOn(repositorySpy, 'findByUsername')
+      .mockReturnValueOnce(
+        Promise.resolve({ password: '' } as User)
+      )
+    ;
+
+    const hasherCompare = jest.spyOn(passwordHasherSpy, 'compare')
+      .mockReturnValueOnce(Promise.resolve(false))
+    ;
+
+    const response = await sut.index(httpRequest)
+
+    expect(hasherCompare).toHaveBeenCalledWith('any_password', '')
+    expect(response.body).toEqual({
+      field: 'password',
+      error: 'Senha inválida.'
+    })
+    expect(response.status).toBe(400)
+  })
+
+  it('should return a 200 response, with user access details', async () => {
+    const { sut, repositorySpy } = makeSut()
+
+    const httpRequest = {
+      params: {},
+      query: {},
+      body: {
+        username: 'any_username',
+        password: 'any_password'
+      }
+    }
+
+    jest.spyOn(repositorySpy, 'findByUsername')
+      .mockReturnValueOnce(
+        Promise.resolve({
+          id: 1,
+          name: 'any_name',
+          email: 'any_email@mail.com',
+          birthday: '2000-04-10',
+          privacyTerms: true,
+          username: 'any_username',
+          password: 'any_password'
+        })
+      )
+    ;
+
+    const response = await sut.index(httpRequest)
+
+    expect(response.body).toEqual({
+      id: 1,
+      name: 'any_name',
+      username: 'any_username',
+      token: 'any_token'
+    })
+    expect(response.status).toBe(200)
+  })
+
   it('should return the user id, username and token when new user is registered', async () => {
     let { sut, repositorySpy } = makeSut()
 
@@ -92,6 +182,7 @@ describe('Login Controller', () => {
     expect(response.body).toEqual({
       id: 1,
       username: 'any_username',
+      name: 'any_name',
       token: 'any_token'
     })
 
@@ -115,6 +206,7 @@ describe('Login Controller', () => {
 
     expect(response.status).toBe(500)
     expect(response.body).toEqual({
+      field: '',
       error: 'Repository Error'
     })
   })
@@ -133,6 +225,7 @@ describe('Login Controller', () => {
 
     expect(response.status).toBe(406)
     expect(response.body).toEqual({
+      field: '',
       error: 'SQLITE_CONSTRAINT UNIQUE error'
     })
   })
@@ -147,7 +240,8 @@ describe('Login Controller', () => {
 
     expect(response.status).toBe(406)
     expect(response.body).toEqual({
-      error: 'Invalid E-mail.'
+      field: 'email',
+      error: 'E-mail inválido.'
     })
   })
 
@@ -161,7 +255,8 @@ describe('Login Controller', () => {
 
     expect(response.status).toBe(406)
     expect(response.body).toEqual({
-      error: 'Invalid birthday date.'
+      field: 'birthday',
+      error: 'Data de nascimento inválida.'
     })
   })
 
@@ -174,7 +269,8 @@ describe('Login Controller', () => {
 
     expect(response.status).toBe(400)
     expect(response.body).toEqual({
-      error: 'Privacy Terms are required.'
+      field: 'privacyTerms',
+      error: 'Termo de privacidade é obrigatório.'
     })
   })
 })

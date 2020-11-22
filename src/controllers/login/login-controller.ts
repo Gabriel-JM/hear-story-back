@@ -23,11 +23,11 @@ export class LoginController {
       if(!user) {
         return HttpResponse.notFound({
           field: 'name',
-          error: 'Nome de usuário já existente.'
+          error: 'Usuário não encontrado.'
         })
       }
 
-      const isPasswordValid = this.passwordHasher.compare(
+      const isPasswordValid = await this.passwordHasher.compare(
         password,
         user.password
       )

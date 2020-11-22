@@ -11,7 +11,7 @@ export class LoginRepository implements Repository<User> {
   async findByUsername(username: string) {
     const [user] = await this.knex(this.table).where({ username })
 
-    return user
+    return user || null
   }
 
   async save(user: User) {

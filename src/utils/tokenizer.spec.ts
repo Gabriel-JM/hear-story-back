@@ -43,6 +43,7 @@ describe('Tokenizer', () => {
     expect(isValid).toBeInstanceOf(Object)
     expect(isValid.id).toBe(user.id)
     expect(isValid.username).toBe(user.username)
+    expect(isValid.name).toBe(user.name)
   })
 
   it('should return a text if an invalid token is provided on verify', () => {

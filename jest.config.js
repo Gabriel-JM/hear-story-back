@@ -1,8 +1,9 @@
 module.exports = {
+  rootDir: 'src',
   preset: 'ts-jest',
   testEnvironment: "node",
   testMatch: [
-    "**/?(*.)+(spec|test).[tj]s?(x)"
+    "<rootDir>/**/?(*.)+(spec|test).ts"
   ],
-  coverageDirectory: 'coverage'
+  coverageDirectory: '../coverage'
 }

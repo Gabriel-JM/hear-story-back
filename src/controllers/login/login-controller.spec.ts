@@ -35,6 +35,7 @@ function makeSut() {
       return {
         id: 1,
         username: 'any_username',
+        name: 'any_name',
         iat: 0,
         exp: 0
       }

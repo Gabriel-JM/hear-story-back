@@ -8,8 +8,8 @@ export class Tokenizer implements TokenGenerator {
 
   constructor(private readonly secretKey: string) {}
 
-  generate({ id, username }: User) {
-    return JWT.sign({ id, username }, this.secretKey, {
+  generate({ id, username, name }: User) {
+    return JWT.sign({ id, username, name }, this.secretKey, {
       expiresIn: maxExperitionDate
     })
   }

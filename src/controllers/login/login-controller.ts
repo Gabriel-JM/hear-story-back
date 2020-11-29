@@ -101,4 +101,21 @@ export class LoginController {
       return ErrorParser.catch(catchedError)
     }
   }
+
+  async refresh(request: HttpRequest) {
+    try {
+      const { token } = request.body as { token: string }
+
+      const tokenVerify = this.tokenGenerator.verify(token)
+
+      return HttpResponse.ok({
+        id: tokenVerify.id,
+        username: tokenVerify.username,
+        name: tokenVerify.name,
+        token
+      })
+    } catch(catchedError) {
+      return ErrorParser.catch(catchedError)
+    }
+  }
 }

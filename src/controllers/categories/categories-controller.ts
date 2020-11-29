@@ -80,7 +80,7 @@ export class CategoriesController {
         })
       }
 
-      const category = await this.repository.update!({ name, color, user })
+      const category = await this.repository.update!({ id, name, color, user })
 
       return HttpResponse.ok(category)
     } catch(catchedError) {

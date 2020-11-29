@@ -1,12 +1,11 @@
 import { HttpRequest, Repository } from '../../protocols/infra'
-import { Category, User } from '../../protocols/models'
+import { Category } from '../../protocols/models'
 import { ErrorParser } from '../../resources/errors/error-parser'
 import { HttpResponse } from '../../resources/http/http-response'
 
 export class CategoriesController {
   constructor(
-    private readonly repository: Repository<Category>,
-    private readonly userRepository: Repository<User>
+    private readonly repository: Repository<Category>
   ) {}
 
   async index() {
@@ -41,14 +40,6 @@ export class CategoriesController {
   async create(request: HttpRequest) {
     try {
       const { name, color, user } = request.body as Category
-      const hasUser = await this.userRepository.find!(user)
-
-      if(!hasUser) {
-        return HttpResponse.badRequest({
-          field: 'user',
-          error: 'Usuário não existente'
-        })
-      }
 
       const category = await this.repository.save!({ name, color, user })
 
@@ -62,14 +53,6 @@ export class CategoriesController {
     try {
       const { id } = request.params
       const { name, color, user } = request.body as Category
-      const hasUser = await this.userRepository.find!(user)
-
-      if(!hasUser) {
-        return HttpResponse.badRequest({
-          field: 'user',
-          error: 'Usuário não existente'
-        })
-      }
 
       const hasCategory = await this.repository.find!(id)
 

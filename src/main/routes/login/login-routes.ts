@@ -7,5 +7,6 @@ const loginController = compose()
 const adapt = ExpressRouterAdapter(loginController)
 
 loginRoutes.post('/', adapt(loginController.index))
+loginRoutes.post('/refresh', adapt(loginController.refresh))
 
 export { loginRoutes }

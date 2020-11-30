@@ -106,6 +106,12 @@ export class LoginController {
     try {
       const { token } = request.body as { token: string }
 
+      if(!token) {
+        return HttpResponse.ok({
+          id: null
+        })
+      }
+
       const tokenVerify = this.tokenGenerator.verify(token)
 
       return HttpResponse.ok({
@@ -115,6 +121,7 @@ export class LoginController {
         token
       })
     } catch(catchedError) {
+      console.error(catchedError.message)
       return ErrorParser.catch(catchedError)
     }
   }

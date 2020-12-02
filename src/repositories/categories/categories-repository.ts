@@ -3,40 +3,42 @@ import { Repository } from '../../protocols/infra'
 import { Category } from '../../protocols/models'
 
 export class CategoriesRepository implements Repository<Category> {
-  private readonly table: Knex.QueryBuilder
+  private readonly table = 'categories'
   
-  constructor(knex: Knex<Category>) {
-    this.table = knex<Category>('categories')
-  }
+  constructor(private readonly knex: Knex<Category>) {}
 
   async findAll() {
-    const allCategories = await this.table.select()
+    const allCategories = await this.knex<Category>(this.table).select()
 
     return allCategories || []
   }
 
   async find(id: number) {
-    const [category] = await this.table.where({ id })
+    const [category] = await this.knex<Category>(this.table)
+      .where({ id })
 
     return category || null
   }
 
   async save(category: Category) {
-    const [categoryId] = await this.table.insert(category)
+    const [categoryId] = await this.knex<Category>(this.table)
+      .insert(category)
 
     return this.find(categoryId)
   }
 
   async update(category: Category) {
-    const ok = await this.table
+    await this.knex<Category>(this.table)
       .where({ id: category.id })
       .update(category)
 
-    return ok ? this.find(category.id as number) : null
+    return this.find(category.id as number)
   }
 
   async delete(id: number) {
-    const ok = await this.table.where({ id }).delete()
+    const ok = await this.knex<Category>(this.table)
+      .where({ id })
+      .delete()
 
     return ok ? {
       success: true,

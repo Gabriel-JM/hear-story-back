@@ -45,6 +45,7 @@ export class CategoriesController {
 
       return HttpResponse.ok(category)
     } catch(catchedError) {
+      console.log(catchedError)
       return ErrorParser.catch(catchedError)
     }
   }
